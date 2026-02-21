@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIVYA-DATA | Cosmic BaZi Insights</title>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --blush-pink: #FCE7F3;
+            --soft-lilac: #EDE9FE;
+            --sky-blue: #E0F2FE;
+            --cream-bg: #FFFAF8;
+            --deep-lavender: #8B5CF6;
+            --cosmic-gradient: linear-gradient(135deg, #F9A8D4, #C084FC);
+            --blue-gradient: linear-gradient(135deg, #A5B4FC, #818CF8);
+            --glass: rgba(255, 255, 255, 0.7);
+            --text-main: #4C1D95;
+            --shadow: 0 10px 30px rgba(139, 92, 246, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--cream-bg);
+            background-image: 
+                radial-gradient(circle at 10% 20%, var(--blush-pink) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, var(--sky-blue) 0%, transparent 40%);
+            color: var(--text-main);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 50px;
+        }
+
+        /* Animated Background Elements */
+        .glow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: var(--soft-lilac);
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.5;
+            animation: float 15s infinite alternate ease-in-out;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .logo {
+            font-weight: 800;
+            letter-spacing: 3px;
+            font-size: 1.2rem;
+            color: var(--deep-lavender);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Glass Cards */
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--deep-lavender);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid var(--soft-lilac);
+            background: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--deep-lavender);
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.15);
+        }
+
+        .btn-calculate {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 15px;
+            background: var(--cosmic-gradient);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(249, 168, 212, 0.4);
+            margin-top: 10px;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(249, 168, 212, 0.6);
+        }
+
+        /* Loading Animation */
+        #loader {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--soft-lilac);
+            border-top: 5px solid var(--deep-lavender);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Results Display */
+        #results {
+            display: none;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .pillar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .pillar-box {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid var(--soft-lilac);
+        }
+
+        .pillar-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            color: var(--deep-lavender);
+        }
+
+        .stem-branch {
+            font-size: 1.4rem;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .element-label {
+            font-size: 0.8rem;
+            font-weight: normal;
+            padding: 2px 8px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        /* Analysis Sections */
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .insight-card {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 20px;
+            border-radius: 18px;
+            margin-top: 15px;
+        }
+
+        .insight-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 250px;
+            width: 250px;
+        }
+
+        .score-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background: var(--sky-blue);
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .pillar-grid { grid-template-columns: repeat(2, 1fr); }
+            .analysis-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 1.8rem; }
+        }
+
+        /* Element Colors */
+        .el-wood { background: #D1FAE5; color: #065F46; }
+        .el-fire { background: #FEE2E2; color: #991B1B; }
+        .el-earth { background: #FEF3C7; color: #92400E; }
+        .el-metal { background: #F3F4F6; color: #374151; }
+        .el-water { background: #DBEAFE; color: #1E40AF; }
+
+    </style>
+</head>
+<body>
+
+    <div class="glow" style="top: 10%; left: 10%;"></div>
+    <div class="glow" style="bottom: 10%; right: 10%; background: var(--blush-pink);"></div>
+
+    <header>
+        <span class="logo">DIVYA-DATA</span>
+        <h1>Four Pillars of Destiny</h1>
+        <p class="subtitle">Unveil your cosmic blueprint through the ancient art of BaZi</p>
+    </header>
+
+    <main>
+        <section class="card">
+            <div id="input-view">
+                <div class="form-group">
+                    <label>Your Full Name</label>
+                    <input type="text" id="userName" placeholder="e.g. Luna Star" required>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Birth Date</label>
+                        <input type="date" id="birthDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Birth Time</label>
+                        <input type="time" id="birthTime" value="12:00">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select id="gender">
+                        <option value="female">Female</option>
+                        <option value="male">Male</option>
+                        <option value="nonbinary">Non-binary</option>
+                    </select>
+                </div>
+                <button class="btn-calculate" onclick="calculateBaZi()">Decode My Destiny</button>
+            </div>
+        </section>
+
+        <div id="loader">
+            <div class="spinner"></div>
+            <p>Aligning celestial energies...</p>
+        </div>
+
+        <section id="results">
+            <div class="card">
+                <h2 style="text-align: center; margin-bottom: 10px;" id="res-name">Lunar Reading</h2>
+                <p style="text-align: center; opacity: 0.6; margin-bottom: 20px;" id="res-date"></p>
+
+                <div class="pillar-grid" id="pillar-container">
+                    <!-- Pillars injected here -->
+                </div>
+
+                <div class="analysis-grid">
+                    <div>
+                        <div class="chart-container">
+                            <canvas id="elementChart"></canvas>
+                        </div>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <p>Primary Element: <span id="dom-element" class="score-badge">Loading...</span></p>
+                            <p style="margin-top: 5px; font-size: 0.85rem;">Balance Score: <span id="balance-score">0</span>%</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="insight-card">
+                            <h3>✨ Personality</h3>
+                            <p id="desc-personality" class="small-text"></p>
+                        </div>
+                        <div class="insight-card">
+                            <h3>💼 Career Path</h3>
+                            <p id="desc-career" class="small-text"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insight-card" style="margin-top: 25px;">
+                    <h3>❤️ Relationship Tendency</h3>
+                    <p id="desc-love"></p>
+                </div>
+
+                <div class="insight-card">
+                    <h3>🔮 Luck Cycle Preview</h3>
+                    <p id="desc-luck"></p>
+                </div>
+
+                <button class="btn-calculate" style="margin-top: 30px; background: var(--blue-gradient);" onclick="resetForm()">New Calculation</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Constants for Sexagenary Cycle
+        const STEMS = ["Jia (Wood+)", "Yi (Wood-)", "Bing (Fire+)", "Ding (Fire-)", "Wu (Earth+)", "Ji (Earth-)", "Geng (Metal+)", "Xin (Metal-)", "Ren (Water+)", "Gui (Water-)"];
+        const BRANCHES = ["Zi (Rat/Water)", "Chou (Ox/Earth)", "Yin (Tiger/Wood)", "Mao (Rabbit/Wood)", "Chen (Dragon/Earth)", "Si (Snake/Fire)", "Wu (Horse/Fire)", "Wei (Goat/Earth)", "Shen (Monkey/Metal)", "You (Rooster/Metal)", "Xu (Dog/Earth)", "Hai (Pig/Water)"];
+        
+        const ELEMENT_MAP = {
+            "Jia": "Wood", "Yi": "Wood", "Yin": "Wood", "Mao": "Wood",
+            "Bing": "Fire", "Ding": "Fire", "Si": "Fire", "Wu": "Fire",
+            "Wu": "Earth", "Ji": "Earth", "Chou": "Earth", "Chen": "Earth", "Wei": "Earth", "Xu": "Earth",
+            "Geng": "Metal", "Xin": "Metal", "Shen": "Metal", "You": "Metal",
+            "Ren": "Water", "Gui": "Water", "Zi": "Water", "Hai": "Water"
+        };
+
+        const DESCRIPTIONS = {
+            Wood: {
+                personality: "Growth-oriented, kind-hearted, and ambitious. You possess a natural resilience like a tall tree, seeking constant self-improvement.",
+                career: "Creative industries, education, design, or environmental sustainability. You thrive in roles that involve nurturing growth.",
+                love: "Supportive and protective. You seek stability and deep emotional roots in your relationships.",
+                luck: "Focus on flexibility. Success comes through collaboration rather than rigid control."
+            },
+            Fire: {
+                personality: "Passionate, charismatic, and enthusiastic. You radiate warmth and energy, drawing others to your vibrant presence.",
+                career: "Entertainment, marketing, public relations, or leadership roles. You excel where you can shine and inspire others.",
+                love: "Intense and romantic. You need excitement and appreciation to keep the flame of love alive.",
+                luck: "Avoid burnout. Managing your energy is key to maintaining long-term success."
+            },
+            Earth: {
+                personality: "Reliable, grounded, and nurturing. Like the soil, you provide a foundation for others and value tradition and security.",
+                career: "Real estate, management, finance, or consultancy. You are best suited for roles requiring trust and stability.",
+                love: "Loyal and steady. You offer a safe harbor for your partner and value long-term commitment.",
+                luck: "Consistency is your superpower. Your patient approach leads to solid rewards."
+            },
+            Metal: {
+                personality: "Focused, disciplined, and righteous. You have a sharp mind and high standards, often seeking perfection and clarity.",
+                career: "Law, engineering, banking, or technical research. You thrive in structured environments that require precision.",
+                love: "Direct and principled. You value honesty and intellectual connection over superficial charms.",
+                luck: "Cultivate softness. Sometimes bending is better than breaking under pressure."
+            },
+            Water: {
+                personality: "Intuitive, wise, and adaptable. You flow like a river, capable of deep thought and navigating complex emotional landscapes.",
+                career: "Communications, shipping, psychology, or artistic pursuits. You excel in roles that involve depth and change.",
+                love: "Soulful and mysterious. You seek a partner who understands your unspoken feelings and flows with you.",
+                luck: "Trust your intuition. Your greatest gains come from following your inner guidance."
+            }
+        };
+
+        let elementChart = null;
+
+        function calculateBaZi() {
+            const name = document.getElementById('userName').value;
+            const dateStr = document.getElementById('birthDate').value;
+            const timeStr = document.getElementById('birthTime').value;
+
+            if (!name || !dateStr) {
+                alert("Please share your birth details to proceed.");
+                return;
+            }
+
+            // Show loader
+            document.getElementById('input-view').parentElement.style.display = 'none';
+            document.getElementById('loader').style.display = 'block';
+
+            setTimeout(() => {
+                const date = new Date(dateStr + 'T' + timeStr);
+                const results = runLogic(date);
+                displayResults(name, dateStr, results);
+            }, 1500);
+        }
+
+        function runLogic(date) {
+            // Sexagenary cycle logic (Simplified for Front-end, using epoch offset)
+            // Reference: 1900-01-31 was a Metal Rat day (Geng-Zi)
+            const baseDate = new Date(1900, 0, 31);
+            const diffDays = Math.floor((date - baseDate) / (1000 * 60 * 60 * 24));
+            
+            // Year Pillar Calculation
+            const year = date.getFullYear();
+            const yearStemIdx = (year - 4) % 10;
+            const yearBranchIdx = (year - 4) % 12;
+
+            // Day Pillar Calculation
+            const dayStemIdx = (diffDays) % 10;
+            const dayBranchIdx = (diffDays) % 12;
+
+            // Month Pillar (Approximate)
+            const month = date.getMonth();
+            const monthBranchIdx = (month + 2) % 12; // Tiger is 1st lunar month
+            const monthStemIdx = (yearStemIdx % 5 * 2 + (month + 1)) % 10;
+
+            // Hour Pillar
+            const hour = date.getHours();
+            const hourBranchIdx = Math.floor(((hour + 1) % 24) / 2);
+            const hourStemIdx = (dayStemIdx % 5 * 2 + hourBranchIdx) % 10;
+
+            const pillars = [
+                { type: 'Year', stem: STEMS[yearStemIdx], branch: BRANCHES[yearBranchIdx] },
+                { type: 'Month', stem: STEMS[monthStemIdx], branch: BRANCHES[monthBranchIdx] },
+                { type: 'Day', stem: STEMS[dayStemIdx], branch: BRANCHES[dayBranchIdx] },
+                { type: 'Hour', stem: STEMS[hourBranchIdx], branch: BRANCHES[hourBranchIdx] }
+            ];
+
+            // Count Elements
+            let counts = { Wood: 0, Fire: 0, Earth: 0, Metal: 0, Water: 0 };
+            pillars.forEach(p => {
+                const sEl = p.stem.split(' ')[0];
+                const bEl = p.branch.split('/')[1].replace(')', '');
+                counts[sEl]++;
+                counts[bEl]++;
+            });
+
+            return { pillars, counts, dayMaster: STEMS[dayStemIdx].split(' ')[0] };
+        }
+
+        function displayResults(name, date, data) {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+            
+            document.getElementById('res-name').innerText = `${name}'s Blueprint`;
+            document.getElementById('res-date').innerText = `Born: ${date}`;
+
+            const container = document.getElementById('pillar-container');
+            container.innerHTML = '';
+
+            data.pillars.forEach(p => {
+                const stemWord = p.stem.split(' ')[0];
+                const branchWord = p.branch.split('/')[1].replace(')', '');
+                
+                const div = document.createElement('div');
+                div.className = 'pillar-box';
+                div.innerHTML = `
+                    <div class="pillar-title">${p.type}</div>
+                    <div class="stem-branch">
+                        <div>${p.stem.split(' ')[0]} <span class="element-label el-${stemWord.toLowerCase()}">${stemWord}</span></div>
+                        <div style="opacity: 0.3; font-size: 0.8rem">|</div>
+                        <div>${p.branch.split(' ')[0]} <span class="element-label el-${branchWord.toLowerCase()}">${branchWord}</span></div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            // Dominant Element
+            let dominant = Object.keys(data.counts).reduce((a, b) => data.counts[a] > data.counts[b] ? a : b);
+            document.getElementById('dom-element').innerText = dominant;
+            document.getElementById('dom-element').className = `score-badge el-${dominant.toLowerCase()}`;
+
+            // Balance Score (Variance calculation)
+            const values = Object.values(data.counts);
+            const avg = values.reduce((a,b)=>a+b)/5;
+            const variance = values.reduce((a,b)=> a + Math.abs(b-avg), 0);
+            const balanceScore = Math.max(0, 100 - (variance * 10));
+            document.getElementById('balance-score').innerText = balanceScore;
+
+            // Descriptions
+            const master = data.dayMaster;
+            document.getElementById('desc-personality').innerText = DESCRIPTIONS[master].personality;
+            document.getElementById('desc-career').innerText = DESCRIPTIONS[master].career;
+            document.getElementById('desc-love').innerText = DESCRIPTIONS[master].love;
+            document.getElementById('desc-luck').innerText = DESCRIPTIONS[master].luck;
+
+            // Chart
+            const ctx = document.getElementById('elementChart').getContext('2d');
+            if(elementChart) elementChart.destroy();
+            
+            elementChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Wood', 'Fire', 'Earth', 'Metal', 'Water'],
+                    datasets: [{
+                        data: [data.counts.Wood, data.counts.Fire, data.counts.Earth, data.counts.Metal, data.counts.Water],
+                        backgroundColor: ['#D1FAE5', '#FEE2E2', '#FEF3C7', '#F3F4F6', '#DBEAFE'],
+                        borderColor: 'white',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    plugins: { legend: { display: false } },
+                    cutout: '70%',
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function resetForm() {
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('input-view').parentElement.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
